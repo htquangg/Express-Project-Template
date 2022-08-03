@@ -18,7 +18,7 @@ async function getOrThrowError(info: Pick<User, 'username'>) {
   }
 }
 
-async function get(info: Pick<User, 'username'>) {
+async function getOne(info: Pick<User, 'username'>) {
   try {
     const user = prisma.user.findUnique({
       where: {
@@ -38,7 +38,7 @@ async function create(
     const userDto = getUserDto(info);
 
     // check user info
-    let user = await get(info);
+    let user = await getOne(info);
     if (user) {
       return Promise.reject('Username is exist!');
     }
@@ -59,7 +59,7 @@ async function create(
 
 async function update(info: WithRequired<Partial<User>, 'username'>) {
   try {
-    let user = await get(info);
+    let user = await getOne(info);
     if (user) {
       const { id, ...restUser } = user;
 
@@ -97,7 +97,7 @@ function getUserDto(info: Pick<User, 'username' | 'password'>): User {
 async function check(
   info: Pick<User, 'username' | 'password'>,
 ): Promise<boolean> {
-  const userInfo = await get(info);
+  const userInfo = await getOne(info);
   if (userInfo) {
     return await bcrypt.compare(info.password, userInfo.password);
   }
@@ -109,4 +109,4 @@ async function setHashPassword(plainText: string) {
   return await bcrypt.hash(plainText, salt);
 }
 
-export { get, create, update, check };
+export { getOrThrowError, getOne, create, update, check };

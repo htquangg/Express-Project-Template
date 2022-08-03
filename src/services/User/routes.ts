@@ -12,7 +12,7 @@ export default [
       const info = {
         username: req.params.username,
       };
-      UserService.get(info)
+      UserService.getOne(info)
         .then((data: any) => {
           ApiResponse.successResponseWithData(req, res, data);
         })

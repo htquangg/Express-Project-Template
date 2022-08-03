@@ -39,7 +39,7 @@ async function verifyAuthToken(
           return ApiResponse.unauthorizedResponse(res, 'Unauthorized');
         }
 
-        const userInfo = await UserService.get(user);
+        const userInfo = await UserService.getOne(user);
 
         if (!userInfo) {
           return ApiResponse.errorResponseWithData(req, res, error);
