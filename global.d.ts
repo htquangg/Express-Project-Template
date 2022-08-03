@@ -6,6 +6,7 @@ namespace NodeJS {
     PORT: number;
     DATABASE_URL: string;
     SECRET_KEY: string;
+    X_API_KEY: string;
   }
 }
 
