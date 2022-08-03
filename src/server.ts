@@ -3,6 +3,7 @@ import 'module-alias/register';
 import { Config } from './utils/config';
 export const AppConfig = new Config();
 
+import './lib/prisma'
 import './utils/handleCrash';
 
 import http from 'http';
