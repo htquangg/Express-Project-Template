@@ -5,7 +5,7 @@ import { UserService } from './';
 
 export default [
   {
-    path: '/user/:username',
+    path: '/users/:username',
     method: 'get',
     security: 'PRIVATE' as SecurityPermission,
     handler: (req: Request, res: Response) => {
@@ -22,7 +22,7 @@ export default [
     },
   },
   {
-    path: '/user',
+    path: '/users',
     method: 'put',
     security: 'PROTECTED' as SecurityPermission,
     handler: (req: Request, res: Response) => {
