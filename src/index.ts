@@ -1,5 +1,7 @@
 import server, { AppConfig } from './server';
 
-server.listen(AppConfig.data.port, () => {
-  console.log(`Server is listening on port ${AppConfig.data.port}...`);
+const webPort = AppConfig.data.PORT;
+
+server.listen(webPort, () => {
+  console.log(`Server is listening on port ${webPort}...`);
 });

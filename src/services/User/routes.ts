@@ -1,36 +1,35 @@
 import { Request, Response } from 'express';
 import ApiResponse from '~/utils/apiResponse';
-import { SecurityPermission } from '~/helper/';
-import { PlayerService } from './';
+import { SecurityPermission } from '~/utils';
+import { UserService } from './';
 
 export default [
   {
-    path: '/player/:playerID',
+    path: '/user/:username',
     method: 'get',
-    security: 'UNPROTECTED' as SecurityPermission,
+    security: 'PRIVATE' as SecurityPermission,
     handler: (req: Request, res: Response) => {
       const info = {
-        playerID: req.params.playerID,
+        username: req.params.username,
       };
-      PlayerService.get(info)
+      UserService.get(info)
         .then((data: any) => {
           ApiResponse.successResponseWithData(req, res, data);
         })
-        .catch((error) => {
+        .catch((error: any) => {
           ApiResponse.errorResponseWithData(req, res, error);
         });
     },
   },
   {
-    path: '/player',
-    method: 'post',
-    security: 'UNPROTECTED' as SecurityPermission,
+    path: '/user',
+    method: 'put',
+    security: 'PROTECTED' as SecurityPermission,
     handler: (req: Request, res: Response) => {
       const info = {
-        playerID: req.params.playerID,
         ...req.body,
       };
-      PlayerService.update(info)
+      UserService.update(info)
         .then((data: any) => {
           ApiResponse.successResponseWithData(req, res, data);
         })
