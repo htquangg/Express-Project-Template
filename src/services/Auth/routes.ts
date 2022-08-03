@@ -11,9 +11,26 @@ export default [
     security: 'UNPROTECTED' as SecurityPermission,
     handler: (req: Request, res: Response) => {
       const info: Info = {
-        ...req.body
+        ...req.body,
       };
       AuthService.getAuthToken(info)
+        .then((data: any) => {
+          ApiResponse.successResponseWithData(req, res, data);
+        })
+        .catch((error: any) => {
+          ApiResponse.errorResponseWithData(req, res, error);
+        });
+    },
+  },
+  {
+    path: '/signup',
+    method: 'post',
+    security: 'UNPROTECTED' as SecurityPermission,
+    handler: (req: Request, res: Response) => {
+      const info: Info = {
+        ...req.body,
+      };
+      AuthService.createUser(info)
         .then((data: any) => {
           ApiResponse.successResponseWithData(req, res, data);
         })

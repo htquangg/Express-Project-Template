@@ -16,7 +16,7 @@ async function getAuthToken(info: Info) {
     {
       username: info.username,
     },
-    AppConfig.data.SECRET_KEY,
+    AppConfig.data.SECRET_KEY as jwt.Secret,
     { expiresIn: '30d' },
   );
 
@@ -33,23 +33,44 @@ async function verifyAuthToken(
     const token = authHeader.split(' ')[1];
     jwt.verify(
       token,
-      AppConfig.data.SECRET_KEY,
+      AppConfig.data.SECRET_KEY as jwt.Secret,
       async (error: any, user: any) => {
         if (error) {
           return ApiResponse.unauthorizedResponse(res, 'Unauthorized');
         }
-        try {
-          const userInfo = await UserService.get(user);
-          if (user) {
-            req.params.username = userInfo.username;
-            next();
-          }
-        } catch (error) {
-          ApiResponse.errorResponseWithData(req, res, error);
+
+        const userInfo = await UserService.get(user);
+
+        if (!userInfo) {
+          return ApiResponse.errorResponseWithData(req, res, error);
         }
+
+        req.params.username = userInfo.username;
+        next();
       },
     );
+  } else {
+    return ApiResponse.unauthorizedResponse(res, 'Unauthorized');
   }
 }
 
-export { verifyAuthToken, getAuthToken };
+async function verifyAuthPrivate(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  if (
+    req.headers.apikey === AppConfig.data.X_API_KEY ||
+    req.headers['x-api-key'] === AppConfig.data.X_API_KEY
+  ) {
+    next();
+  } else {
+    return ApiResponse.unauthorizedResponse(res, 'Unauthorized');
+  }
+}
+
+async function createUser(info: Info) {
+  return UserService.create(info);
+}
+
+export { verifyAuthToken, verifyAuthPrivate, getAuthToken, createUser };
