@@ -1,0 +1,33 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "darwin", "linux-arm64-openssl-1.1.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String @id @default(cuid())
+  username String @unique
+  password String
+}
+
+model Movie {
+  id          String  @id @default(cuid())
+  title       String
+  description String
+  Actor       Actor[]
+}
+
+model Actor {
+  id      String  @id @default(cuid())
+  name    String
+  age     String
+  Movie   Movie?  @relation(fields: [movieId], references: [id])
+  movieId String?
+}
