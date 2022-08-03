@@ -9,7 +9,13 @@
     "postinstall": "tsc",
     "build": "rimraf ./dist && tsc",
     "docker:dev": "docker-compose -f docker-compose.yml -f docker-compose.dev.yml up",
-    "docker:prod": "docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d"
+    "docker:start-dev": "npm run prisma:docker-generate && npm run start:dev ",
+    "docker:prod": "docker-compose -f docker-compose.yml -f docker-compose.prod.yml up",
+    "docker:start-prod": "npm run prisma:docker-generate && npm run start:prod",
+    "prisma:generate": "npx prisma generate",
+    "prisma:migrate": "npx prisma migrate dev",
+    "prisma:docker-generate": "npx prisma migrate dev --name movies --create-only --schema ./app/prisma/schema.prisma"
+
   },
   "dependencies": {
     "@prisma/client": "^4.1.1",

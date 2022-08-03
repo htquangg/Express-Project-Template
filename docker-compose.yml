@@ -1,0 +1,37 @@
+version: '3'
+
+services:
+    postgres:
+        image: 'postgres:14.0'
+        container_name: postgres
+        ports:
+            - "5432:5432"
+        restart: always
+        deploy:
+            mode: replicated
+            replicas: 1
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+            POSTGRES_DB: movies
+        volumes:
+            - .:/var/lib/postgresql/movies/data
+        networks:
+            - node-network
+
+    movie-service:
+        build: ./
+        restart: always
+        ports:
+            - "3001:3001"
+        depends_on:
+            - postgres
+        deploy:
+            mode: replicated
+            replicas: 1
+        networks:
+            - node-network
+
+networks:
+    node-network:
+        driver: bridge

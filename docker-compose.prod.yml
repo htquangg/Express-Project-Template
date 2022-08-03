@@ -1,0 +1,6 @@
+version: '3'
+
+services:
+  movie-service:
+    container_name: movie-service-prod
+    command: yarn docker:start-prod
