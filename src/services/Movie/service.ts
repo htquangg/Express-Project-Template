@@ -1,6 +1,6 @@
 import prisma from '~/lib/prisma';
 import { v4 as uuidv4 } from 'uuid';
-import type { Movie } from '@prisma/client';
+import type { Movie, Prisma } from '@prisma/client';
 
 async function getOrThrowError(info: Pick<Movie, 'id'>) {
   try {
@@ -17,12 +17,12 @@ async function getOrThrowError(info: Pick<Movie, 'id'>) {
 
 async function getOne(info: Pick<Movie, 'id'>) {
   try {
-    const user = prisma.movie.findUnique({
+    const movie = prisma.movie.findUnique({
       where: {
         id: info.id,
       },
     });
-    return Promise.resolve(user);
+    return Promise.resolve(movie);
   } catch (error) {
     return Promise.reject(error);
   }
@@ -30,7 +30,11 @@ async function getOne(info: Pick<Movie, 'id'>) {
 
 async function getAll() {
   try {
-    const movies = prisma.movie.findMany();
+    const movies = prisma.movie.findMany({
+      include: {
+        Actor: {},
+      },
+    });
     return Promise.resolve(movies);
   } catch (error) {
     return Promise.reject(error);
@@ -38,11 +42,41 @@ async function getAll() {
 }
 
 async function create(
-  info: WithRequired<Partial<Movie>, 'title' | 'description'>,
+  info: WithRequired<Partial<Movie>, 'title' | 'description'> & {
+    actors?: Omit<Prisma.ActorCreateInput, 'Movie'>[];
+  },
 ) {
   try {
     const movieDto = getMovieDto(info);
-    const movie = await prisma.movie.create({
+
+    let actors;
+    let movie;
+
+    if (info.actors) {
+      actors = info.actors.map((actor) => {
+        return {
+          where: {
+            id: uuidv4(),
+          },
+          create: {
+            id: uuidv4(),
+            name: actor.name,
+            age: actor.age,
+          },
+        };
+      });
+
+      movie = await prisma.movie.create({
+        data: {
+          ...movieDto,
+          Actor: {
+            connectOrCreate: [...actors],
+          },
+        },
+      });
+      return Promise.resolve(movie);
+    }
+    movie = await prisma.movie.create({
       data: {
         ...movieDto,
       },
